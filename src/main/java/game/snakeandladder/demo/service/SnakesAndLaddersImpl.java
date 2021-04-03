@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class SnakesAndLaddersImpl implements SnakesAndLadders {
@@ -20,7 +21,31 @@ public class SnakesAndLaddersImpl implements SnakesAndLadders {
     }
 
     private List<Players> doGame(List<Players> players){
+        Random random = new Random();
+        int generatedPosition = random.nextInt(6)+1;
+
+        for (Players p: players){
+            if (p.isStatus() ) {
+
+                if (checkPositionNumber(p, generatedPosition))
+                    p.setPosition(p.getPosition() + generatedPosition);
+                p.setStatus(false);
+                if (p.getPosition() == 100){
+                    p.setWinner("Yes");
+                    break;
+                }
+            }
+            else {
+                p.setStatus(true);
+            }
+        }
         return players;
+    }
+    private boolean checkPositionNumber(Players p, int position) {
+        if(p.getPosition() + position > 100){
+            return false;
+        } else
+            return true;
     }
 
     private List<Players> initPlayers() {

@@ -22,11 +22,11 @@ public class SnakeAndLaddersController {
         this.snakesAndLaddersImpl = snakesAndLaddersImpl;
     }
 
-    @PostMapping()
+    @PostMapping(value = "/starts", produces = "application/json")
     public ResponseEntity<List<Players>> initGame(){
         return new ResponseEntity(snakesAndLaddersImpl.snakesAndLaddersGameStart(),HttpStatus.CREATED);
     }
-    @PutMapping()
+    @PutMapping(value = "/games", produces = "application/json")
     public ResponseEntity<List<Players>> startGame(@RequestBody  @NonNull  List<Players> players) {
         return new ResponseEntity(snakesAndLaddersImpl.snakeAndLaddersGames(players),HttpStatus.OK);
     }
