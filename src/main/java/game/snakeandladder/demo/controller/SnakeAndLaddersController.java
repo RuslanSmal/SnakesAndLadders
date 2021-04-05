@@ -1,6 +1,6 @@
 package game.snakeandladder.demo.controller;
 
-import game.snakeandladder.demo.models.Players;
+import game.snakeandladder.demo.models.Player;
 import game.snakeandladder.demo.service.SnakesAndLaddersImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +18,18 @@ public class SnakeAndLaddersController {
 
     private SnakesAndLaddersImpl snakesAndLaddersImpl;
 
-    public SnakeAndLaddersController(SnakesAndLaddersImpl snakesAndLaddersImpl){
+    public SnakeAndLaddersController(SnakesAndLaddersImpl snakesAndLaddersImpl) {
         this.snakesAndLaddersImpl = snakesAndLaddersImpl;
     }
 
     @PostMapping(value = "/starts", produces = "application/json")
-    public ResponseEntity<List<Players>> initGame(){
-        return new ResponseEntity(snakesAndLaddersImpl.snakesAndLaddersGameStart(),HttpStatus.CREATED);
+    public ResponseEntity<List<Player>> initGame() {
+        return new ResponseEntity(snakesAndLaddersImpl.gameStart(), HttpStatus.CREATED);
     }
+
     @PutMapping(value = "/games", produces = "application/json")
-    public ResponseEntity<List<Players>> startGame(@RequestBody  @NonNull  List<Players> players) {
-        return new ResponseEntity(snakesAndLaddersImpl.snakeAndLaddersGames(players),HttpStatus.OK);
+    public ResponseEntity<List<Player>> startGame(@RequestBody @NonNull List<Player> players) {
+        return new ResponseEntity(snakesAndLaddersImpl.games(players), HttpStatus.OK);
     }
 
 }

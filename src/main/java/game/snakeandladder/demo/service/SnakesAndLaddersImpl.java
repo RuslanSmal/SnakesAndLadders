@@ -1,7 +1,7 @@
 package game.snakeandladder.demo.service;
 
 
-import game.snakeandladder.demo.models.Players;
+import game.snakeandladder.demo.models.Player;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,62 +10,59 @@ import java.util.Random;
 
 @Service
 public class SnakesAndLaddersImpl implements SnakesAndLadders {
+    private static String NAME_1 = "Name1";
+    private static String NAME_2 = "Name2";
 
     @Override
-    public List<Players> snakesAndLaddersGameStart(){
-        return initPlayers();
+    public List<Player> gameStart() {
+        List<Player> players = new ArrayList<>();
+
+        Player player1 = new Player();
+        player1.setName(NAME_1);
+        player1.setPosition(1);
+        player1.setDoRollOfDie(true);
+        player1.setWinner(false);
+
+        Player player2 = new Player();
+        player2.setName(NAME_2);
+        player2.setPosition(1);
+        player2.setDoRollOfDie(false);
+        player2.setWinner(false);
+
+        players.add(player1);
+        players.add(player2);
+        return players;
     }
+
     @Override
-    public List<Players> snakeAndLaddersGames(List<Players> players){
-        return doGame(players);
-    }
-
-    private List<Players> doGame(List<Players> players){
-        Random random = new Random();
-        int generatedPosition = random.nextInt(6)+1;
-
-        for (Players p: players){
-            if (p.isStatus() ) {
+    public List<Player> games(List<Player> players) {
+        int generatedPosition = getGeneratedPosition();
+        for (Player p : players) {
+            if (p.isDoRollOfDie()) {
 
                 if (checkPositionNumber(p, generatedPosition))
                     p.setPosition(p.getPosition() + generatedPosition);
-                p.setStatus(false);
-                if (p.getPosition() == 100){
-                    p.setWinner("Yes");
+                p.setDoRollOfDie(false);
+                if (p.getPosition() == 100) {
+                    p.setWinner(true);
                     break;
                 }
-            }
-            else {
-                p.setStatus(true);
+            } else {
+                p.setDoRollOfDie(true);
             }
         }
         return players;
     }
-    private boolean checkPositionNumber(Players p, int position) {
-        if(p.getPosition() + position > 100){
+
+    private int getGeneratedPosition() {
+        return new Random().nextInt(6) + 1;
+    }
+
+    private boolean checkPositionNumber(Player p, int position) {
+        if (p.getPosition() + position > 100) {
             return false;
         } else
             return true;
-    }
-
-    private List<Players> initPlayers() {
-        List<Players> players = new ArrayList<>();
-
-        Players player1 = new Players();
-        player1.setName("Name1");
-        player1.setPosition(1);
-        player1.setStatus(true);
-        player1.setWinner("No");
-
-        Players player2 = new Players();
-        player2.setName("Name2");
-        player2.setPosition(1);
-        player2.setStatus(false);
-        player2.setWinner("No");
-
-        players.add(player1);
-        players.add(player2);
-        return  players;
     }
 }
 

@@ -1,6 +1,6 @@
 package game.snakeandladder.demo;
 
-import game.snakeandladder.demo.models.Players;
+import game.snakeandladder.demo.models.Player;
 import game.snakeandladder.demo.service.SnakesAndLaddersImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,11 +27,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class SnakeandladderApplicationTests {
+class SnakeAndLadderApplicationTests {
 
 
-    private static String TEST_JSON = "[{\"name\":\"Name1\",\"position\":1,\"status\":true,\"winner\":\"No\"},{\"name\":\"Name2\",\"position\":1,\"status\":false,\"winner\":\"No\"}]";
+    private static String TEST_JSON = "[{\"name\":\"Name1\",\"position\":1,\"doRollOfDie\":true,\"false\":\"No\"},{\"name\":\"Name2\",\"position\":1,\"doRollOfDie\":false,\"false\":\"No\"}]";
     private static String BASE_URI = "http://localhost:8080";
+    private static String NAME_1 = "Name1";
+    private static String NAME_2 = "Name2";
 
     @MockBean
     private SnakesAndLaddersImpl snakesAndLadders;
@@ -42,60 +44,59 @@ class SnakeandladderApplicationTests {
     @Test
     @DisplayName("Testing start the game (POST /starts)")
     void snakesAndLaddersStartGameTest() throws Exception {
-        doReturn(setupTestPlayers()).when(snakesAndLadders).snakesAndLaddersGameStart();
+        doReturn(setupTestPlayers()).when(snakesAndLadders).gameStart();
 
         mockMvc.perform(post(BASE_URI + "/starts").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.[0].name", is("Name1")))
-                .andExpect(jsonPath("$.[0].winner", is("No")))
-                .andExpect(jsonPath("$.[1].name", is("Name2")))
-                .andExpect(jsonPath("$.[1].winner", is("No")));
+                .andExpect(jsonPath("$.[0].name", is(NAME_1)))
+                .andExpect(jsonPath("$.[0].winner", is(false)))
+                .andExpect(jsonPath("$.[1].name", is(NAME_2)))
+                .andExpect(jsonPath("$.[1].winner", is(false)));
     }
 
     @Test
     @DisplayName("Test game (PUT /games)")
     void snakesAndLaddersGameTest() throws Exception {
-        doReturn(setupTestPlayers()).when(snakesAndLadders).snakeAndLaddersGames(ArgumentMatchers.any());
+        doReturn(setupTestPlayers()).when(snakesAndLadders).games(ArgumentMatchers.any());
 
         mockMvc.perform(put(BASE_URI + "/games").contentType(MediaType.APPLICATION_JSON)
                 .content(TEST_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name", is("Name1")))
-                .andExpect(jsonPath("$.[1].name", is("Name2")))
+                .andExpect(jsonPath("$.[0].name", is(NAME_1)))
+                .andExpect(jsonPath("$.[1].name", is(NAME_2)))
                 .andExpect(jsonPath("$.[1].position", is(1)));
     }
 
     @Test
     @DisplayName("Test service methods")
-    void testService(){
-        doCallRealMethod().when(this.snakesAndLadders).snakeAndLaddersGames(ArgumentMatchers.any());
-        List<Players> initList = this.snakesAndLadders.snakeAndLaddersGames(setupTestPlayers());
+    void testService() {
+        doCallRealMethod().when(this.snakesAndLadders).games(ArgumentMatchers.any());
+        List<Player> initList = this.snakesAndLadders.games(setupTestPlayers());
 
         assertNotEquals(initList.get(0).getPosition(), 1);
         assertEquals(initList.get(1).getPosition(), 1);
-        assertEquals(initList.get(0).isStatus(), false);
-        assertEquals(initList.get(1).isStatus(), true);
-
+        assertEquals(initList.get(0).isDoRollOfDie(), false);
+        assertEquals(initList.get(1).isDoRollOfDie(), true);
     }
 
-    private List<Players> setupTestPlayers(){
-        List<Players> players = new ArrayList<>();
+    private List<Player> setupTestPlayers() {
+        List<Player> players = new ArrayList<>();
 
-        Players player1 = new Players();
-        player1.setName("Name1");
+        Player player1 = new Player();
+        player1.setName(NAME_1);
         player1.setPosition(1);
-        player1.setStatus(true);
-        player1.setWinner("No");
+        player1.setDoRollOfDie(true);
+        player1.setWinner(false);
 
-        Players player2 = new Players();
-        player2.setName("Name2");
+        Player player2 = new Player();
+        player2.setName(NAME_2);
         player2.setPosition(1);
-        player2.setStatus(false);
-        player2.setWinner("No");
+        player2.setDoRollOfDie(false);
+        player2.setWinner(false);
 
         players.add(player1);
         players.add(player2);
-        return  players;
+        return players;
     }
 
 }

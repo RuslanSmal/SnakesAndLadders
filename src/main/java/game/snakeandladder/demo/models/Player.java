@@ -1,10 +1,10 @@
 package game.snakeandladder.demo.models;
 
-public class Players {
+public class Player {
     private String name;
     private int position;
-    private boolean status;
-    private String winner;
+    private boolean doRollOfDie;
+    private boolean winner;
 
     public String getName() {
         return name;
@@ -22,19 +22,19 @@ public class Players {
         this.position = position;
     }
 
-    public boolean isStatus() {
-        return status;
+    public boolean isDoRollOfDie() {
+        return doRollOfDie;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setDoRollOfDie(boolean doRollOfDie) {
+        this.doRollOfDie = doRollOfDie;
     }
 
-    public String getWinner() {
+    public boolean isWinner() {
         return winner;
     }
 
-    public void setWinner(String winner) {
+    public void setWinner(boolean winner) {
         this.winner = winner;
     }
 
@@ -43,7 +43,7 @@ public class Players {
         return "[" +
                 "name='" + name + '\'' +
                 ", position=" + position +
-                ", status=" + status +
+                ", status=" + doRollOfDie +
                 ", winner='" + winner + '\'' +
                 ']';
     }
