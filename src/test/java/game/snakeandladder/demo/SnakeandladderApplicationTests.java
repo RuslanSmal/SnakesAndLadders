@@ -2,9 +2,9 @@ package game.snakeandladder.demo;
 
 import game.snakeandladder.demo.models.Player;
 import game.snakeandladder.demo.service.SnakesAndLaddersImpl;
+import game.snakeandladder.demo.service.Utils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +17,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +36,9 @@ class SnakeAndLadderApplicationTests {
 
     @MockBean
     private SnakesAndLaddersImpl snakesAndLadders;
+
+    @MockBean
+    Utils utils;
 
     @Autowired
     private MockMvc mockMvc;
@@ -57,7 +59,7 @@ class SnakeAndLadderApplicationTests {
     @Test
     @DisplayName("Test game (PUT /games)")
     void snakesAndLaddersGameTest() throws Exception {
-        doReturn(setupTestPlayers()).when(snakesAndLadders).games(ArgumentMatchers.any());
+        doReturn(setupTestPlayers()).when(snakesAndLadders).games(any());
 
         mockMvc.perform(put(BASE_URI + "/games").contentType(MediaType.APPLICATION_JSON)
                 .content(TEST_JSON))
@@ -70,13 +72,30 @@ class SnakeAndLadderApplicationTests {
     @Test
     @DisplayName("Test service methods")
     void testService() {
-        doCallRealMethod().when(this.snakesAndLadders).games(ArgumentMatchers.any());
-        List<Player> initList = this.snakesAndLadders.games(setupTestPlayers());
+        when(snakesAndLadders.games(anyList())).thenReturn(setupTestPlayers());
+        List<Player> initList = snakesAndLadders.games(setupTestPlayers());
 
-        assertNotEquals(initList.get(0).getPosition(), 1);
+        assertEquals(initList.get(0).getPosition(), 1);
         assertEquals(initList.get(1).getPosition(), 1);
-        assertEquals(initList.get(0).isDoRollOfDie(), false);
-        assertEquals(initList.get(1).isDoRollOfDie(), true);
+        assertEquals(initList.get(0).isDoRollOfDie(), true);
+        assertEquals(initList.get(1).isDoRollOfDie(), false);
+    }
+
+    @Test
+    void testWinners() {
+        when(utils.getGeneratedPosition()).thenReturn(99);
+        when(utils.checkPositionNumber(any(Player.class), anyInt())).thenReturn(true);
+        when(snakesAndLadders.getUtils()).thenReturn(utils);
+        when(snakesAndLadders.gameStart()).thenReturn(setupTestPlayers());
+        when(snakesAndLadders.games(anyList())).thenCallRealMethod();
+
+        List<Player> playerList = snakesAndLadders.gameStart();
+        List<Player> game = snakesAndLadders.games(playerList);
+
+        System.out.println(game);
+        assertEquals(true, game.get(0).isWinner());
+        assertEquals(100, game.get(0).getPosition());
+        assertEquals(false, game.get(1).isWinner());
     }
 
     private List<Player> setupTestPlayers() {

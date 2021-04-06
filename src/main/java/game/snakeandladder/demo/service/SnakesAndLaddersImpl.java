@@ -6,12 +6,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class SnakesAndLaddersImpl implements SnakesAndLadders {
+
+    private Utils utils;
+
     private static String NAME_1 = "Name1";
     private static String NAME_2 = "Name2";
+
+    public SnakesAndLaddersImpl(Utils utils) {
+        this.utils = utils;
+    }
+
+    public Utils getUtils() {
+        return utils;
+    }
 
     @Override
     public List<Player> gameStart() {
@@ -36,11 +46,10 @@ public class SnakesAndLaddersImpl implements SnakesAndLadders {
 
     @Override
     public List<Player> games(List<Player> players) {
-        int generatedPosition = getGeneratedPosition();
+        int generatedPosition = getUtils().getGeneratedPosition();
         for (Player p : players) {
             if (p.isDoRollOfDie()) {
-
-                if (checkPositionNumber(p, generatedPosition))
+                if (getUtils().checkPositionNumber(p, generatedPosition))
                     p.setPosition(p.getPosition() + generatedPosition);
                 p.setDoRollOfDie(false);
                 if (p.getPosition() == 100) {
@@ -54,15 +63,5 @@ public class SnakesAndLaddersImpl implements SnakesAndLadders {
         return players;
     }
 
-    private int getGeneratedPosition() {
-        return new Random().nextInt(6) + 1;
-    }
-
-    private boolean checkPositionNumber(Player p, int position) {
-        if (p.getPosition() + position > 100) {
-            return false;
-        } else
-            return true;
-    }
 }
 
